@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10151f">
+  <meta name="description" content="A private, local-first JSON workbench for formatting, inspecting, comparing, and finding values in JSON documents.">
+  <title>JSON Compass — private JSON workbench</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%237c8cff'/%3E%3Cpath d='M20 16c-6 0-8 5-8 11v10c0 5-2 8-7 8 5 0 7 3 7 8v1c0 6 2 10 8 10M44 16c6 0 8 5 8 11v10c0 5 2 8 7 8-5 0-7 3-7 8v1c0 6-2 10-8 10' fill='none' stroke='white' stroke-width='4'/%3E%3Ccircle cx='32' cy='32' r='4' fill='white'/%3E%3Ccircle cx='32' cy='44' r='4' fill='white'/%3E%3Ccircle cx='32' cy='20' r='4' fill='white'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="JSON Compass home"><span class="brand-mark">{·}</span><span>JSON <b>Compass</b></span></a>
+    <div class="privacy"><span class="privacy-dot"></span> Private by design <span class="privacy-sep">·</span> Runs in your browser</div>
+    <nav class="top-actions" aria-label="Main actions">
+      <button class="quiet-button" id="open-file" type="button" title="Open a JSON file">Open file</button>
+      <button class="icon-button" id="theme-toggle" type="button" aria-label="Toggle color theme" title="Toggle theme">◐</button>
+    </nav>
+    <input id="file-input" type="file" accept=".json,application/json,text/json" hidden>
+  </header>
+
+  <main class="shell">
+    <section class="intro">
+      <div class="eyebrow"><span class="eyebrow-line"></span> JSON WORKBENCH</div>
+      <h1>Get your data<br><span>in the right direction.</span></h1>
+      <p>Format, explore, compare, and find your way through JSON. Your documents stay on this device.</p>
+      <div class="intro-meta"><span class="local-icon">⌂</span> No uploads <span>·</span> No account <span>·</span> No tracking</div>
+    </section>
+
+    <section class="workspace" aria-label="JSON workspace">
+      <div class="workspace-head">
+        <div class="tabs" role="tablist" aria-label="Workbench mode">
+          <button class="tab active" id="tab-explore" role="tab" aria-selected="true" aria-controls="panel-explore" type="button">Explore</button>
+          <button class="tab" id="tab-diff" role="tab" aria-selected="false" aria-controls="panel-diff" type="button">Compare</button>
+        </div>
+        <div class="head-actions">
+          <span id="status" class="status" role="status">Ready</span>
+          <button class="toolbar-button" id="copy-json" type="button" title="Copy formatted JSON">Copy</button>
+          <button class="toolbar-button primary-button" id="download-json" type="button" title="Download formatted JSON">Export JSON</button>
+        </div>
+      </div>
+
+      <section id="panel-explore" class="panel" role="tabpanel" aria-labelledby="tab-explore">
+        <div class="editor-grid">
+          <section class="editor-card input-card">
+            <div class="card-heading"><div><span class="step">01</span><h2>Input</h2><span class="card-caption">Paste JSON or open a file</span></div><button class="text-button" id="clear-input" type="button">Clear</button></div>
+            <label class="sr-only" for="json-input">JSON input</label>
+            <textarea id="json-input" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder='{
+  "project": "JSON Compass",
+  "private": true,
+  "features": ["format", "explore", "compare"]
+}'></textarea>
+            <div class="editor-footer"><span id="input-metrics">0 lines · 0 bytes</span><span id="parse-state" class="parse-state"><i></i> Waiting for JSON</span></div>
+          </section>
+
+          <section class="editor-card output-card">
+            <div class="card-heading"><div><span class="step">02</span><h2>Formatted</h2><span class="card-caption">Readable, valid JSON</span></div><div class="compact-actions"><button class="text-button" id="format-json" type="button">Format</button><button class="text-button" id="minify-json" type="button">Minify</button></div></div>
+            <pre class="code-output" id="formatted-output" tabindex="0" aria-label="Formatted JSON output"><code class="placeholder-code">Your formatted JSON will appear here.</code></pre>
+            <div class="editor-footer"><span id="output-metrics">—</span><span>2 spaces</span></div>
+          </section>
+        </div>
+
+        <div class="inspector-grid">
+          <section class="inspector-card">
+            <div class="card-heading inspector-heading"><div><span class="step">03</span><h2>Overview</h2></div><span class="subtle-label">Document shape</span></div>
+            <div class="stat-grid" id="stats"><div class="stat"><span>Keys</span><b>—</b></div><div class="stat"><span>Arrays</span><b>—</b></div><div class="stat"><span>Depth</span><b>—</b></div><div class="stat"><span>Size</span><b>—</b></div></div>
+          </section>
+          <section class="inspector-card search-card">
+            <div class="card-heading inspector-heading"><div><span class="step">04</span><h2>Find a value</h2></div><span class="subtle-label">Search keys and values</span></div>
+            <div class="search-row"><label class="search-input-wrap"><span>⌕</span><input id="search-input" type="search" placeholder="Try: email, true, 42…" autocomplete="off"><kbd>Enter</kbd></label><button id="search-button" class="search-button" type="button">Find</button></div>
+            <div class="search-results" id="search-results" aria-live="polite">Enter a term to search your document.</div>
+          </section>
+        </div>
+        <section class="tree-card">
+          <div class="card-heading tree-heading"><div><span class="step">05</span><h2>Structure</h2><span class="card-caption">Browse nested data and copy a JSON path</span></div><button class="text-button" id="expand-tree" type="button">Expand all</button></div>
+          <div id="tree-view" class="tree-view"><div class="tree-empty">Your document outline will appear here after you enter valid JSON.</div></div>
+        </section>
+      </section>
+
+      <section id="panel-diff" class="panel diff-panel" role="tabpanel" aria-labelledby="tab-diff" hidden>
+        <div class="diff-intro"><div><span class="step">SIDE BY SIDE</span><h2>See what changed.</h2><p>Compare two JSON documents locally. Added, removed, and changed paths are listed below.</p></div><button class="toolbar-button primary-button" id="compare-json" type="button">Compare documents</button></div>
+        <div class="diff-inputs">
+          <div class="diff-card"><div class="diff-card-head"><span>Original</span><button class="text-button diff-clear" data-target="original-json" type="button">Clear</button></div><textarea id="original-json" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder='{"name":"Example","enabled":true}' aria-label="Original JSON"></textarea></div>
+          <div class="diff-card"><div class="diff-card-head"><span>Updated</span><button class="text-button diff-clear" data-target="updated-json" type="button">Clear</button></div><textarea id="updated-json" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder='{"name":"Example","enabled":false}' aria-label="Updated JSON"></textarea></div>
+        </div>
+        <div class="diff-summary" id="diff-summary" aria-live="polite"><span class="diff-empty">Add two JSON documents to compare.</span></div>
+        <div class="diff-results" id="diff-results"></div>
+      </section>
+      <footer class="work-footer"><span>Made for careful work with JSON.</span><span>All processing happens locally <span class="footer-lock">⌑</span></span></footer>
+    </section>
+    <footer class="page-footer"><span>JSON Compass <span id="version">v1.0.0</span></span><span>Open source · Built for developers</span></footer>
+  </main>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
