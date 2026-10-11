@@ -1,3 +1,5 @@
+import { compareJson, jsonPath } from './json-core.mjs';
+
 (() => {
   'use strict';
   const $ = (selector, root = document) => root.querySelector(selector);
@@ -59,9 +61,6 @@
     const prettySize = size < 1024 ? `${size} B` : size < 1048576 ? `${(size / 1024).toFixed(1)} KB` : `${(size / 1048576).toFixed(2)} MB`;
     const values = [shape.keys.toLocaleString(), shape.arrays.toLocaleString(), shape.maxDepth.toLocaleString(), prettySize];
     stats.innerHTML = ['Keys', 'Arrays', 'Depth', 'Size'].map((label, index) => `<div class="stat"><span>${label}</span><b>${values[index]}</b></div>`).join('');
-  }
-  function jsonPath(path) {
-    return '$' + path.map(part => typeof part === 'number' ? `[${part}]` : /^[A-Za-z_$][\w$]*$/.test(part) ? `.${part}` : `[${JSON.stringify(part)}]`).join('');
   }
   function buildTree(value) {
     tree.replaceChildren();
@@ -146,17 +145,11 @@
   $$('.tab').forEach(button=>button.addEventListener('click',()=>{$$('.tab').forEach(tab=>{const active=tab===button;tab.classList.toggle('active',active);tab.setAttribute('aria-selected',String(active));});$('#panel-explore').hidden=button.id!=='tab-explore';$('#panel-diff').hidden=button.id!=='tab-diff';}));
   $('.diff-clear').addEventListener('click',event=>{$(`#${event.currentTarget.dataset.target}`).value='';});
   $$('.diff-clear').forEach(button=>button.addEventListener('click',()=>{$('#diff-summary').innerHTML='<span class="diff-empty">Add two JSON documents to compare.</span>';$('#diff-results').replaceChildren();}));
-  function compareValues(before,after,path,changes){
-    if(Object.is(before,after))return;
-    const bothObjects=before!==null&&after!==null&&typeof before==='object'&&typeof after==='object'&&Array.isArray(before)===Array.isArray(after);
-    if(bothObjects){const keys=new Set([...Object.keys(before),...Object.keys(after)]);for(const key of keys){const hasA=Object.prototype.hasOwnProperty.call(before,key),hasB=Object.prototype.hasOwnProperty.call(after,key),part=Array.isArray(after)||Array.isArray(before)?Number(key):key;const next=[...path,part];if(!hasA)changes.push({kind:'added',path:next,after:after[key]});else if(!hasB)changes.push({kind:'removed',path:next,before:before[key]});else compareValues(before[key],after[key],next,changes);}return;}
-    changes.push({kind:'changed',path,before,after});
-  }
   function preview(value){let s=JSON.stringify(value);if(s===undefined)s='undefined';return s.length>150?s.slice(0,147)+'…':s;}
   $('#compare-json').addEventListener('click',()=>{
     const aText=$('#original-json').value,bText=$('#updated-json').value;
     try{
-      const a=JSON.parse(aText),b=JSON.parse(bText),changes=[];compareValues(a,b,[],changes);
+      const a=JSON.parse(aText),b=JSON.parse(bText),changes=compareJson(a,b);
       const summary=$('#diff-summary'),results=$('#diff-results');results.replaceChildren();
       const counts={added:0,removed:0,changed:0};changes.forEach(item=>counts[item.kind]++);
       summary.innerHTML=`<span class="diff-count added">+ ${counts.added} added</span><span class="diff-count removed">− ${counts.removed} removed</span><span class="diff-count changed">↔ ${counts.changed} changed</span>`;

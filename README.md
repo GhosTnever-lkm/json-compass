@@ -34,7 +34,7 @@ Open [JSON Compass](https://ghostnever-lkm.github.io/json-compass/). Paste JSON 
 
 ### Run from a download
 
-1. Download `JSON-Compass-v1.0.0.zip` from the [latest release](https://github.com/GhosTnever-lkm/json-compass/releases/latest).
+1. Download `JSON-Compass-v1.0.1.zip` from the [latest release](https://github.com/GhosTnever-lkm/json-compass/releases/latest).
 2. Extract the archive.
 3. Open `index.html` in a modern browser.
 
@@ -57,6 +57,15 @@ The default browser theme preference is stored in local storage. Your JSON conte
 - The tree can be browsed with keyboard focus; use each disclosure button to expand or collapse a node.
 - All key controls have visible focus styles and accessible names.
 
+## Development checks
+
+Requires Node.js 20 or newer:
+
+```sh
+npm test
+npm run check
+```
+
 ## Limits
 
 - JSON must be valid according to the browser's `JSON.parse`; comments and trailing commas are not accepted.
@@ -66,7 +75,7 @@ The default browser theme preference is stored in local storage. Your JSON conte
 
 ## Project details
 
-- Version: **1.0.0**
+- Version: **1.0.1**
 - License: [MIT](LICENSE)
 - Author: [GhosTnever-lkm](https://github.com/GhosTnever-lkm)
 

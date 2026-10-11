@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.1 — 2026-10-11
+
+- Extract JSON path formatting and document comparison into a testable core module.
+- Add regression tests and CI; load the browser app as an ES module.
+- Refresh version and download instructions.
+
 ## 1.0.0 — 2026-10-08
 
 - First public release of JSON Compass.
