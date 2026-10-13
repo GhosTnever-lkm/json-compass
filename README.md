@@ -69,13 +69,15 @@ npm run check
 ## Limits
 
 - JSON must be valid according to the browser's `JSON.parse`; comments and trailing commas are not accepted.
+- Documents may be nested up to 200 object/array levels. Deeper documents are rejected with a clear limit message so the browser does not run into recursive processing limits.
+- Documents may be nested up to 200 object/array levels. Deeper documents are rejected with a clear limit message so the browser does not run into recursive processing limits.
 - File input is capped at 25 MB to keep the browser responsive.
 - The compare view shows up to 1,000 individual changes.
 - This is a JSON inspector, not a JSON Schema validator.
 
 ## Project details
 
-- Version: **1.0.1**
+- Version: **1.0.2**
 - License: [MIT](LICENSE)
 - Author: [GhosTnever-lkm](https://github.com/GhosTnever-lkm)
 

@@ -5,6 +5,7 @@ import { compareJson, jsonPath } from './json-core.mjs';
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
   const input = $('#json-input');
+  const MAX_NESTING_DEPTH = 200;
   const output = $('#formatted-output');
   const status = $('#status');
   const parseState = $('#parse-state');
@@ -26,6 +27,25 @@ import { compareJson, jsonPath } from './json-core.mjs';
   }
 
   function byteLength(value) { return new TextEncoder().encode(value).length; }
+  function parseJson(text) {
+    let depth = 0;
+    let inString = false;
+    let escaped = false;
+    for (const character of text) {
+      if (inString) {
+        if (escaped) escaped = false;
+        else if (character === '\\') escaped = true;
+        else if (character === '"') inString = false;
+        continue;
+      }
+      if (character === '"') inString = true;
+      else if (character === '{' || character === '[') {
+        depth++;
+        if (depth > MAX_NESTING_DEPTH) throw new Error(`Nesting exceeds the supported limit of ${MAX_NESTING_DEPTH} levels.`);
+      } else if (character === '}' || character === ']') depth--;
+    }
+    return JSON.parse(text);
+  }
   function setStatus(message, kind = '') {
     status.textContent = message;
     status.style.color = kind === 'error' ? 'var(--red)' : kind === 'success' ? 'var(--green)' : '';
@@ -119,7 +139,7 @@ import { compareJson, jsonPath } from './json-core.mjs';
       valid = false; parsed = undefined; parseState.className='parse-state'; parseState.innerHTML='<i></i> Waiting for JSON'; output.innerHTML='<code class="placeholder-code">Your formatted JSON will appear here.</code>'; $('#output-metrics').textContent='—'; stats.innerHTML=['Keys','Arrays','Depth','Size'].map(x=>`<div class="stat"><span>${x}</span><b>—</b></div>`).join(''); tree.innerHTML='<div class="tree-empty">Your document outline will appear here after you enter valid JSON.</div>'; searchResults.textContent='Enter a term to search your document.'; setStatus('Ready'); updateSearch(); return;
     }
     try {
-      parsed=JSON.parse(raw); valid=true;
+      parsed=parseJson(raw); valid=true;
       const formatted=JSON.stringify(parsed,null,2);
       output.innerHTML=`<code>${syntaxHighlight(formatted)}</code>`;
       $('#output-metrics').textContent=`${formatted.split('\n').length} lines · ${byteLength(formatted).toLocaleString()} bytes`;
@@ -149,7 +169,7 @@ import { compareJson, jsonPath } from './json-core.mjs';
   $('#compare-json').addEventListener('click',()=>{
     const aText=$('#original-json').value,bText=$('#updated-json').value;
     try{
-      const a=JSON.parse(aText),b=JSON.parse(bText),changes=compareJson(a,b);
+      const a=parseJson(aText),b=parseJson(bText),changes=compareJson(a,b);
       const summary=$('#diff-summary'),results=$('#diff-results');results.replaceChildren();
       const counts={added:0,removed:0,changed:0};changes.forEach(item=>counts[item.kind]++);
       summary.innerHTML=`<span class="diff-count added">+ ${counts.added} added</span><span class="diff-count removed">− ${counts.removed} removed</span><span class="diff-count changed">↔ ${counts.changed} changed</span>`;
