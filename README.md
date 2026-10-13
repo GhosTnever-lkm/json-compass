@@ -34,11 +34,12 @@ Open [JSON Compass](https://ghostnever-lkm.github.io/json-compass/). Paste JSON 
 
 ### Run from a download
 
-1. Download `JSON-Compass-v1.0.1.zip` from the [latest release](https://github.com/GhosTnever-lkm/json-compass/releases/latest).
+1. Download [`JSON-Compass-v1.0.2.zip`](https://github.com/GhosTnever-lkm/json-compass/releases/download/v1.0.2/JSON-Compass-v1.0.2.zip) from the [v1.0.2 release](https://github.com/GhosTnever-lkm/json-compass/releases/tag/v1.0.2).
 2. Extract the archive.
-3. Open `index.html` in a modern browser.
+3. In the extracted folder, run `python -m http.server 8000`.
+4. Open `http://localhost:8000` in a modern browser.
 
-The app is static and needs no build step or local server. Google Fonts are an optional visual enhancement; the app works with system fonts if they are unavailable.
+The app needs no build step or package installation. Google Fonts are an optional visual enhancement; the app works with system fonts if they are unavailable.
 
 ### Host your own copy
 
@@ -69,7 +70,6 @@ npm run check
 ## Limits
 
 - JSON must be valid according to the browser's `JSON.parse`; comments and trailing commas are not accepted.
-- Documents may be nested up to 200 object/array levels. Deeper documents are rejected with a clear limit message so the browser does not run into recursive processing limits.
 - Documents may be nested up to 200 object/array levels. Deeper documents are rejected with a clear limit message so the browser does not run into recursive processing limits.
 - File input is capped at 25 MB to keep the browser responsive.
 - The compare view shows up to 1,000 individual changes.
