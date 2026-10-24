@@ -34,7 +34,7 @@ Open [JSON Compass](https://ghostnever-lkm.github.io/json-compass/). Paste JSON 
 
 ### Run from a download
 
-1. Download [`JSON-Compass-v1.0.2.zip`](https://github.com/GhosTnever-lkm/json-compass/releases/download/v1.0.2/JSON-Compass-v1.0.2.zip) from the [v1.0.2 release](https://github.com/GhosTnever-lkm/json-compass/releases/tag/v1.0.2).
+1. Download [`JSON-Compass-v1.0.3.zip`](https://github.com/GhosTnever-lkm/json-compass/releases/download/v1.0.3/JSON-Compass-v1.0.3.zip) from the [v1.0.3 release](https://github.com/GhosTnever-lkm/json-compass/releases/tag/v1.0.3).
 2. Extract the archive.
 3. In the extracted folder, run `python -m http.server 8000`.
 4. Open `http://localhost:8000` in a modern browser.
@@ -77,7 +77,7 @@ npm run check
 
 ## Project details
 
-- Version: **1.0.2**
+- Version: **1.0.3**
 - License: [MIT](LICENSE)
 - Author: [GhosTnever-lkm](https://github.com/GhosTnever-lkm)
 
