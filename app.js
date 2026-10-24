@@ -163,8 +163,12 @@ import { compareJson, jsonPath } from './json-core.mjs';
   $('#search-button').addEventListener('click',updateSearch);searchInput.addEventListener('keydown',event=>{if(event.key==='Enter')updateSearch();});
   $('#expand-tree').addEventListener('click',()=>{if(!valid)return toast('Enter valid JSON first');treeExpanded=!treeExpanded;$('#expand-tree').textContent=treeExpanded?'Collapse all':'Expand all';buildTree(parsed);});
   $$('.tab').forEach(button=>button.addEventListener('click',()=>{$$('.tab').forEach(tab=>{const active=tab===button;tab.classList.toggle('active',active);tab.setAttribute('aria-selected',String(active));});$('#panel-explore').hidden=button.id!=='tab-explore';$('#panel-diff').hidden=button.id!=='tab-diff';}));
-  $('.diff-clear').addEventListener('click',event=>{$(`#${event.currentTarget.dataset.target}`).value='';});
-  $$('.diff-clear').forEach(button=>button.addEventListener('click',()=>{$('#diff-summary').innerHTML='<span class="diff-empty">Add two JSON documents to compare.</span>';$('#diff-results').replaceChildren();}));
+  $$('.diff-clear').forEach(button=>button.addEventListener('click',event=>{
+    const target = document.getElementById(event.currentTarget.dataset.target);
+    if (target) target.value = '';
+    $('#diff-summary').innerHTML='<span class="diff-empty">Add two JSON documents to compare.</span>';
+    $('#diff-results').replaceChildren();
+  }));
   function preview(value){let s=JSON.stringify(value);if(s===undefined)s='undefined';return s.length>150?s.slice(0,147)+'…':s;}
   $('#compare-json').addEventListener('click',()=>{
     const aText=$('#original-json').value,bText=$('#updated-json').value;

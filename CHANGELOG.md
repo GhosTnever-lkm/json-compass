@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.3 — 2026-10-24
+
+- Fixed each comparison Clear button so it empties its own input and resets the previous results.
+- Updated the visible version and download instructions.
+
 ## 1.0.2 — 2026-10-13
 
 - Added a clear 200-level nesting limit for the main inspector and document comparison, preventing deeply nested JSON from failing later during recursive rendering or diffing.
