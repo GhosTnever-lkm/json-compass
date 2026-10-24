@@ -1,6 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { compareJson, jsonPath } from './json-core.mjs';
+
+test('the visible footer version matches package metadata', async () => {
+  const [{ version }, html] = await Promise.all([
+    readFile(new URL('./package.json', import.meta.url), 'utf8').then(JSON.parse),
+    readFile(new URL('./index.html', import.meta.url), 'utf8'),
+  ]);
+  assert.match(html, new RegExp(`<span id="version">v${version.replaceAll('.', '\\.')}</span>`));
+});
 
 test('formats paths for identifiers, array indices, and unusual keys', () => {
   assert.equal(jsonPath(['users', 0, 'email']), '$.users[0].email');
